@@ -1,10 +1,10 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 
-export default function UploadImagePrompt({ ...otherProps }) {
+export default function UploadImagePrompt({ onPress, ...otherProps }) {
     return (
         <View>
-            <TouchableOpacity style={styles.promptButton}>
+            <TouchableOpacity style={styles.promptButton} onPress={onPress}>
                 <Text style={styles.promptText}>
                     Click here to add an image
                 </Text>

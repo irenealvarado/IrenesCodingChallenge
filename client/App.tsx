@@ -1,9 +1,18 @@
 import { StatusBar } from 'expo-status-bar'
-import React from 'react'
-import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import {
+    StyleSheet,
+    Text,
+    View,
+    Button,
+    TouchableOpacity,
+    Platform,
+    Image,
+} from 'react-native'
 import { Formik, useFormik, Field, Form } from 'formik'
 import TextInput from './components/TextInput.js'
 import UploadImagePrompt from './components/UploadImagePrompt.js'
+import * as ImagePicker from 'expo-image-picker'
 
 interface Values {
     imageDescription: string
@@ -11,6 +20,8 @@ interface Values {
 }
 
 export default function App() {
+    const [image, setImage] = useState(null)
+
     const { handleChange, handleSubmit, values } = useFormik({
         initialValues: { imageDescription: '', imageURL: '' },
         onSubmit: (values) =>
@@ -18,6 +29,37 @@ export default function App() {
                 `imageDescription: ${values.imageDescription}, imageURL: ${values.imageURL}`
             ),
     })
+
+    //get access to photos
+    useEffect(() => {
+        ;(async () => {
+            if (Platform.OS !== 'web') {
+                const { status } =
+                    await ImagePicker.requestMediaLibraryPermissionsAsync()
+                if (status !== 'granted') {
+                    alert(
+                        'Sorry, we need camera roll permissions to make this work!'
+                    )
+                }
+            }
+        })()
+    }, [])
+
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        })
+
+        // console.log(result)
+
+        if (!result.cancelled) {
+            //make post call with image uri
+        }
+    }
+
     return (
         <View style={styles.container}>
             <Formik
@@ -29,7 +71,13 @@ export default function App() {
             >
                 {({ handleChange, handleBlur, handleSubmit, values }) => (
                     <View style={styles.formContainer}>
-                        <UploadImagePrompt />
+                        <UploadImagePrompt onPress={pickImage} />
+                        {image && (
+                            <Image
+                                source={{ uri: image }}
+                                style={{ width: 200, height: 200, margin: 10 }}
+                            />
+                        )}
                         <TextInput
                             style={styles.description}
                             onChangeText={handleChange('imageDescription')}
