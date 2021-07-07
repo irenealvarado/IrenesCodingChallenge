@@ -1,18 +1,11 @@
 import { StatusBar } from 'expo-status-bar'
 import React, { useState, useEffect } from 'react'
-import {
-    StyleSheet,
-    Text,
-    View,
-    Button,
-    TouchableOpacity,
-    Platform,
-    Image,
-} from 'react-native'
+import { StyleSheet, Text, View, Button, Platform } from 'react-native'
 import { Formik, useFormik, Field, Form } from 'formik'
+import * as ImagePicker from 'expo-image-picker'
 import TextInput from './components/TextInput.js'
 import UploadImagePrompt from './components/UploadImagePrompt.js'
-import * as ImagePicker from 'expo-image-picker'
+import Card from './components/Card.js'
 
 // NEED TO DO: rename to something more semantic
 interface GetImageInfo {
@@ -22,8 +15,27 @@ interface GetImageInfo {
 
 type imagePathType = {}
 
+const mockData = [
+    {
+        imagePath:
+            'https://i.picsum.photos/id/881/700/700.jpg?hmac=-JqTJ4_Ped2jYmjiaDgYZOAGzvC0CybCKbROT3GJgZc',
+        imageDescription: 'weird text',
+    },
+    {
+        imagePath:
+            'https://i.picsum.photos/id/881/700/700.jpg?hmac=-JqTJ4_Ped2jYmjiaDgYZOAGzvC0CybCKbROT3GJgZc',
+        imageDescription: 'weird text2',
+    },
+    {
+        imagePath:
+            'https://i.picsum.photos/id/881/700/700.jpg?hmac=-JqTJ4_Ped2jYmjiaDgYZOAGzvC0CybCKbROT3GJgZc',
+        imageDescription: 'weird text3',
+    },
+]
+
 export default function App() {
     const [imagePath, setImagePath] = useState('')
+    const [data, setData] = useState(null)
 
     //custom React hook that will return all Formik state and helpers directly
     const { handleBlur, handleChange, handleSubmit, values } = useFormik({
@@ -43,7 +55,7 @@ export default function App() {
         },
     })
 
-    //get image from library
+    //Upload images from library
     const pickImage = async () => {
         const { uri } = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -76,6 +88,13 @@ export default function App() {
         }
     }, [])
 
+    //get posts submitted list display
+    useEffect(() => {
+        fetch('"https://imagehasbeenverified.example.endpoint"')
+            .then((res) => res.json())
+            .then((data) => setData(data.message))
+    }, [])
+
     return (
         <View style={styles.container}>
             <Formik
@@ -98,6 +117,7 @@ export default function App() {
                     <Button onPress={handleSubmit} title="Submit" />
                 </View>
             </Formik>
+            <Card data={mockData} />
         </View>
     )
 }
@@ -108,11 +128,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+        paddingTop: 30,
     },
     formContainer: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20,
+        padding: 5,
     },
 })
