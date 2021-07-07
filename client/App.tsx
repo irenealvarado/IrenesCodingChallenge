@@ -14,25 +14,50 @@ import TextInput from './components/TextInput.js'
 import UploadImagePrompt from './components/UploadImagePrompt.js'
 import * as ImagePicker from 'expo-image-picker'
 
-interface Values {
+// NEED TO DO: rename to something more semantic
+interface GetImageInfo {
     imageDescription: string
     imageURL: string
 }
 
-export default function App() {
-    const [image, setImage] = useState(null)
+type imagePathType = {}
 
-    const { handleChange, handleSubmit, values } = useFormik({
+export default function App() {
+    const [imagePath, setImagePath] = useState('')
+
+    //custom React hook that will return all Formik state and helpers directly
+    const { handleBlur, handleChange, handleSubmit, values } = useFormik({
         initialValues: { imageDescription: '', imageURL: '' },
-        onSubmit: (values) =>
-            alert(
-                `imageDescription: ${values.imageDescription}, imageURL: ${values.imageURL}`
-            ),
+        onSubmit: (values: GetImageInfo) => {
+            fetch('http://10.0.2.2:3000/image', {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                method: 'POST',
+                body: JSON.stringify({
+                    imageURL: imagePath,
+                    imageDescription: `${values.imageDescription}`,
+                }),
+            })
+        },
     })
+
+    //get image from library
+    const pickImage = async () => {
+        const { uri } = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        })
+
+        if (uri) setImagePath(uri)
+    }
 
     //get access to photos
     useEffect(() => {
-        ;(async () => {
+        const fetchImage = async () => {
             if (Platform.OS !== 'web') {
                 const { status } =
                     await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -42,23 +67,14 @@ export default function App() {
                     )
                 }
             }
-        })()
-    }, [])
-
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        })
-
-        // console.log(result)
-
-        if (!result.cancelled) {
-            //make post call with image uri
         }
-    }
+
+        fetchImage()
+
+        return () => {
+            setImagePath('')
+        }
+    }, [])
 
     return (
         <View style={styles.container}>
@@ -67,28 +83,20 @@ export default function App() {
                     imageDescription: '',
                     imageURL: '',
                 }}
-                onSubmit={(values) => console.log(values)}
+                onSubmit={(values) => console.log('values', values)}
             >
-                {({ handleChange, handleBlur, handleSubmit, values }) => (
-                    <View style={styles.formContainer}>
-                        <UploadImagePrompt onPress={pickImage} />
-                        {image && (
-                            <Image
-                                source={{ uri: image }}
-                                style={{ width: 200, height: 200, margin: 10 }}
-                            />
-                        )}
-                        <TextInput
-                            style={styles.description}
-                            onChangeText={handleChange('imageDescription')}
-                            onBlur={handleBlur('imageDescription')}
-                            value={values.imageDescription}
-                            editable
-                            maxLength={40}
-                        />
-                        <Button onPress={handleSubmit} title="Submit" />
-                    </View>
-                )}
+                <View style={styles.formContainer}>
+                    <UploadImagePrompt onPress={pickImage} />
+                    <TextInput
+                        style={styles.description}
+                        onChangeText={handleChange('imageDescription')}
+                        onBlur={handleBlur('imageDescription')}
+                        value={values.imageDescription}
+                        editable
+                        maxLength={40}
+                    />
+                    <Button onPress={handleSubmit} title="Submit" />
+                </View>
             </Formik>
         </View>
     )
