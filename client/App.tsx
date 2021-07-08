@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar'
 import React, { useState, useEffect, useRef } from 'react'
 import { StyleSheet, Text, View, Platform } from 'react-native'
-import { Formik, useFormik, Field, Form, ErrorMessage } from 'formik'
+import { Formik, useFormik } from 'formik'
 import * as ImagePicker from 'expo-image-picker'
 import TextInput from './components/TextInput.js'
 import UploadImagePrompt from './components/UploadImagePrompt.js'
@@ -9,46 +9,37 @@ import ImageItem from './components/ImageItem.js'
 import FixedHeader from './elements/FixedHeader.js'
 import { Button } from 'react-native-elements'
 import { IImageItemProps } from './models/image.ts'
-
-const mockData = [
-    {
-        imagePath:
-            'https://i.picsum.photos/id/881/700/700.jpg?hmac=-JqTJ4_Ped2jYmjiaDgYZOAGzvC0CybCKbROT3GJgZc',
-        imageDescription: 'Image comment',
-    },
-    {
-        imagePath:
-            'https://i.picsum.photos/id/881/700/700.jpg?hmac=-JqTJ4_Ped2jYmjiaDgYZOAGzvC0CybCKbROT3GJgZc',
-        imageDescription: 'more comments!',
-    },
-    {
-        imagePath:
-            'https://i.picsum.photos/id/881/700/700.jpg?hmac=-JqTJ4_Ped2jYmjiaDgYZOAGzvC0CybCKbROT3GJgZc',
-        imageDescription: 'you guessed it! more and more comments',
-    },
-]
+import axios from 'axios'
+import { apiBaseUrl, apiEndpoints } from './constants/constants.js'
+import { mockData } from './imageApiHelpers/mockData.js'
 
 export default function App() {
     const [imagePath, setImagePath] = useState('')
-    const [data, setData] = useState(null)
-    const [uiError, setUiError] = useState(null)
+    const [data, setData] = useState(mockData)
 
     //custom React hook that will return all Formik state and helpers directly
     const { handleBlur, handleChange, handleSubmit, values } = useFormik({
-        initialValues: { imageDescription: '' },
-        onSubmit: (values: IImageItemProps) => {
+        initialValues: { imageComment: '' },
+        onSubmit: async (values: IImageItemProps) => {
+            // Simple UI validation
+            // TODO: migrate to formik + yup validation
+            if (!values.imageComment || !imagePath)
+                return alert('Missing comment or image')
             // TODO: use 10.0.2.2 when making this work for Android
-            fetch('http://localhost:3000/image', {
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                body: JSON.stringify({
-                    imageURL: imagePath,
-                    imageDescription: `${values.imageDescription}`,
-                }),
-            })
+            try {
+                await axios.post(`${apiBaseUrl}/${apiEndpoints.image}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    method: 'POST',
+                    body: {
+                        imageURL: imagePath,
+                        imageComment: `${values.imageComment}`,
+                    },
+                })
+            } catch (error) {
+                console.error(error)
+            }
         },
     })
 
@@ -81,16 +72,14 @@ export default function App() {
         fetchImage()
 
         return () => {
+            // reset states to default valuesclean up for component unmount
             setImagePath('')
         }
     }, [])
 
-    //get image/comment submissions data for the list display
-    //TODO: move mock data here
     useEffect(() => {
-        fetch('"https://imagehasbeenverified.example.endpoint"')
-            .then((res) => res.json())
-            .then((data) => setData(data.message))
+        // TODO: fetch data from backend endpoint called getImage
+        return () => {}
     }, [])
 
     return (
@@ -99,9 +88,9 @@ export default function App() {
                 <UploadImagePrompt onPress={pickImage} />
                 <TextInput
                     style={styles.description}
-                    onChangeText={handleChange('imageDescription')}
-                    onBlur={handleBlur('imageDescription')}
-                    value={values.imageDescription}
+                    onChangeText={handleChange('imageComment')}
+                    onBlur={handleBlur('imageComment')}
+                    value={values.imageComment}
                     editable
                     maxLength={30}
                 />
