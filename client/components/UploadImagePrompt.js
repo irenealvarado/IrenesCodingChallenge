@@ -1,11 +1,12 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, TouchableOpacity, StyleSheet } from 'react-native'
+import { Text } from 'react-native-elements'
 
 export default function UploadImagePrompt({ onPress, ...otherProps }) {
     return (
         <View>
             <TouchableOpacity style={styles.promptButton} onPress={onPress}>
-                <Text style={styles.promptText}>
+                <Text h5 style={styles.promptText}>
                     Click here to add an image
                 </Text>
             </TouchableOpacity>
@@ -22,7 +23,6 @@ const styles = StyleSheet.create({
         margin: 20,
     },
     promptText: {
-        fontSize: 15,
         alignSelf: 'center',
     },
 })

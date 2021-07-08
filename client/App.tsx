@@ -1,11 +1,13 @@
 import { StatusBar } from 'expo-status-bar'
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, View, Button, Platform } from 'react-native'
+import { StyleSheet, Text, View, Platform } from 'react-native'
 import { Formik, useFormik, Field, Form } from 'formik'
 import * as ImagePicker from 'expo-image-picker'
 import TextInput from './components/TextInput.js'
 import UploadImagePrompt from './components/UploadImagePrompt.js'
-import Card from './components/Card.js'
+import ImageItem from './components/ImageItem.js'
+import FixedHeader from './elements/FixedHeader.js'
+import { Button, Input } from 'react-native-elements'
 
 // NEED TO DO: rename to something more semantic
 interface GetImageInfo {
@@ -114,10 +116,15 @@ export default function App() {
                         editable
                         maxLength={40}
                     />
-                    <Button onPress={handleSubmit} title="Submit" />
+                    <Button
+                        title="Submit"
+                        type="solid"
+                        onPress={handleSubmit}
+                        style={{ margin: 20 }}
+                    />
                 </View>
             </Formik>
-            <Card data={mockData} />
+            <ImageItem data={mockData} />
         </View>
     )
 }

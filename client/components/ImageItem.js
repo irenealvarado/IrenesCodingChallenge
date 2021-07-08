@@ -1,14 +1,11 @@
 import React from 'react'
-import { StyleSheet, View, Text, Image, ScrollView } from 'react-native'
+import { StyleSheet, View, Image, ScrollView } from 'react-native'
+import { Card, ListItem, Button, Icon } from 'react-native-elements'
+import { Text } from 'react-native-elements'
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    commentText: {
-        color: 'black',
-        fontSize: 15,
-        padding: 5,
     },
     image: {
         width: 250,
@@ -17,25 +14,26 @@ const styles = StyleSheet.create({
     },
 })
 
-const Card = (props) => {
+const ImageItem = (props) => {
     const { data } = props
     return (
         <ScrollView style={styles.container}>
-            <View>
+            <Card>
                 {data.map((imageComment) => (
                     <View>
-                        <Text style={styles.commentText}>
-                            {imageComment.imageDescription}
-                        </Text>
                         <Image
                             style={styles.image}
                             source={data.map((images) => images.imagePath)}
                         />
+                        <Text h5 style={{ padding: 5 }}>
+                            {imageComment.imageDescription}
+                        </Text>
+                        <Card.Divider />
                     </View>
                 ))}
-            </View>
+            </Card>
         </ScrollView>
     )
 }
 
-export default Card
+export default ImageItem
