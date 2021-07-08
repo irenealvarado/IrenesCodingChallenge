@@ -8,11 +8,11 @@ import { IImageItemProps } from '../models/image.ts'
 const ImageItem: FC<IImageItemProps> = ({ data }): ReactElement => (
     <ScrollView style={styles.container}>
         <Card>
-            {data.map(({ imagePath, imageDescription }) => (
+            {data.map(({ imagePath, imageComment }) => (
                 <View key={nanoid()}>
                     <Image style={styles.image} source={{ uri: imagePath }} />
                     <Text h5 style={{ padding: 5 }}>
-                        {imageDescription}
+                        {imageComment}
                     </Text>
                     <Card.Divider />
                 </View>

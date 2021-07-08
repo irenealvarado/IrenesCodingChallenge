@@ -1,4 +1,4 @@
 export interface IImageItemProps {
-    imageDescription: string // TODO: change name to imageComment
+    imageComment: string
     imagePath: string
 }

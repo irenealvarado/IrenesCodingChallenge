@@ -15,6 +15,7 @@ export default function TextInput({ ...otherProps }) {
         >
             <View style={{ flex: 1 }}>
                 <RNTextInput
+                    placeholder="Add your comment"
                     underlineColorAndroid="transparent"
                     placeholderTextColor="rgba(34, 62, 75, 0.7)"
                     {...otherProps}
