@@ -1,7 +1,6 @@
 import React, { FC, ReactElement } from 'react'
 import { StyleSheet, View, Image, ScrollView } from 'react-native'
-import { Card, ListItem, Button, Icon } from 'react-native-elements'
-import { Text } from 'react-native-elements'
+import { Card, Text } from 'react-native-elements'
 import { nanoid } from 'nanoid/non-secure'
 import { IImageItemProps } from '../models/image.ts'
 
@@ -9,6 +8,7 @@ const ImageItem: FC<IImageItemProps> = ({ data }): ReactElement => (
     <ScrollView style={styles.container}>
         <Card>
             {data.map(({ imagePath, imageComment }) => (
+                //nanoid to auto generate unique keys for my list
                 <View key={nanoid()}>
                     <Image style={styles.image} source={{ uri: imagePath }} />
                     <Text h5 style={{ padding: 5 }}>

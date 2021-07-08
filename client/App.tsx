@@ -1,12 +1,10 @@
-import { StatusBar } from 'expo-status-bar'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, Platform } from 'react-native'
-import { Formik, useFormik } from 'formik'
+import { useFormik } from 'formik'
 import * as ImagePicker from 'expo-image-picker'
 import TextInput from './components/TextInput.js'
 import UploadImagePrompt from './components/UploadImagePrompt.js'
 import ImageItem from './components/ImageItem.js'
-import FixedHeader from './elements/FixedHeader.js'
 import { Button } from 'react-native-elements'
 import { IImageItemProps } from './models/image.ts'
 import axios from 'axios'
@@ -26,6 +24,8 @@ export default function App() {
             if (!values.imageComment || !imagePath)
                 return alert('Missing comment or image')
             // TODO: use 10.0.2.2 when making this work for Android
+
+            // TODO: Abstract this into a new component, one for all axios calls
             try {
                 await axios.post(`${apiBaseUrl}/${apiEndpoints.image}`, {
                     headers: {
