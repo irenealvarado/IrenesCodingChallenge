@@ -8,14 +8,7 @@ import UploadImagePrompt from './components/UploadImagePrompt.js'
 import ImageItem from './components/ImageItem.js'
 import FixedHeader from './elements/FixedHeader.js'
 import { Button } from 'react-native-elements'
-
-// NEED TO DO: rename to something more semantic
-interface GetImageInfo {
-    imageDescription: string
-    imageURL: string
-}
-
-type imagePathType = {}
+import { IImageItemProps } from './models/image.ts'
 
 const mockData = [
     {
@@ -38,14 +31,14 @@ const mockData = [
 export default function App() {
     const [imagePath, setImagePath] = useState('')
     const [data, setData] = useState(null)
+    const [uiError, setUiError] = useState(null)
 
     //custom React hook that will return all Formik state and helpers directly
     const { handleBlur, handleChange, handleSubmit, values } = useFormik({
-        initialValues: { imageDescription: '', imageURL: '' },
-        onSubmit: (values: GetImageInfo) => {
-            console.log('submitting')
-            console.log('values', values)
-            fetch('http://10.0.2.2:3000/image', {
+        initialValues: { imageDescription: '' },
+        onSubmit: (values: IImageItemProps) => {
+            // TODO: use 10.0.2.2 when making this work for Android
+            fetch('http://localhost:3000/image', {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
@@ -93,6 +86,7 @@ export default function App() {
     }, [])
 
     //get image/comment submissions data for the list display
+    //TODO: move mock data here
     useEffect(() => {
         fetch('"https://imagehasbeenverified.example.endpoint"')
             .then((res) => res.json())
