@@ -1,13 +1,13 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { StyleSheet, Text, View, Platform } from 'react-native'
-import { Formik, useFormik, Field, Form } from 'formik'
+import { Formik, useFormik, Field, Form, ErrorMessage } from 'formik'
 import * as ImagePicker from 'expo-image-picker'
 import TextInput from './components/TextInput.js'
 import UploadImagePrompt from './components/UploadImagePrompt.js'
 import ImageItem from './components/ImageItem.js'
 import FixedHeader from './elements/FixedHeader.js'
-import { Button, Input } from 'react-native-elements'
+import { Button } from 'react-native-elements'
 
 // NEED TO DO: rename to something more semantic
 interface GetImageInfo {
@@ -21,17 +21,17 @@ const mockData = [
     {
         imagePath:
             'https://i.picsum.photos/id/881/700/700.jpg?hmac=-JqTJ4_Ped2jYmjiaDgYZOAGzvC0CybCKbROT3GJgZc',
-        imageDescription: 'weird text',
+        imageDescription: 'Image comment',
     },
     {
         imagePath:
             'https://i.picsum.photos/id/881/700/700.jpg?hmac=-JqTJ4_Ped2jYmjiaDgYZOAGzvC0CybCKbROT3GJgZc',
-        imageDescription: 'weird text2',
+        imageDescription: 'more comments!',
     },
     {
         imagePath:
             'https://i.picsum.photos/id/881/700/700.jpg?hmac=-JqTJ4_Ped2jYmjiaDgYZOAGzvC0CybCKbROT3GJgZc',
-        imageDescription: 'weird text3',
+        imageDescription: 'you guessed it! more and more comments',
     },
 ]
 
@@ -43,6 +43,8 @@ export default function App() {
     const { handleBlur, handleChange, handleSubmit, values } = useFormik({
         initialValues: { imageDescription: '', imageURL: '' },
         onSubmit: (values: GetImageInfo) => {
+            console.log('submitting')
+            console.log('values', values)
             fetch('http://10.0.2.2:3000/image', {
                 headers: {
                     Accept: 'application/json',
@@ -90,7 +92,7 @@ export default function App() {
         }
     }, [])
 
-    //get posts submitted list display
+    //get image/comment submissions data for the list display
     useEffect(() => {
         fetch('"https://imagehasbeenverified.example.endpoint"')
             .then((res) => res.json())
@@ -99,31 +101,23 @@ export default function App() {
 
     return (
         <View style={styles.container}>
-            <Formik
-                initialValues={{
-                    imageDescription: '',
-                    imageURL: '',
-                }}
-                onSubmit={(values) => console.log('values', values)}
-            >
-                <View style={styles.formContainer}>
-                    <UploadImagePrompt onPress={pickImage} />
-                    <TextInput
-                        style={styles.description}
-                        onChangeText={handleChange('imageDescription')}
-                        onBlur={handleBlur('imageDescription')}
-                        value={values.imageDescription}
-                        editable
-                        maxLength={40}
-                    />
-                    <Button
-                        title="Submit"
-                        type="solid"
-                        onPress={handleSubmit}
-                        style={{ margin: 20 }}
-                    />
-                </View>
-            </Formik>
+            <View style={styles.formContainer}>
+                <UploadImagePrompt onPress={pickImage} />
+                <TextInput
+                    style={styles.description}
+                    onChangeText={handleChange('imageDescription')}
+                    onBlur={handleBlur('imageDescription')}
+                    value={values.imageDescription}
+                    editable
+                    maxLength={30}
+                />
+                <Button
+                    title="Submit"
+                    type="solid"
+                    onPress={handleSubmit}
+                    style={{ margin: 20 }}
+                />
+            </View>
             <ImageItem data={mockData} />
         </View>
     )
